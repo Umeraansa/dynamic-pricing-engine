@@ -76,7 +76,8 @@ if st.sidebar.button("Run Amazon US Market Analysis"):
         weaknesses = ["The charging case stops holding a charge after 2 months.", "Ear tips fall out easily during workouts."]
         fix = "Bundle extra silicone ear-tip sizes and upgrade your battery component supplier."
     else:
-        comp_sellers = ["Top US Brand Alpha", "PrimeMarket Seller", "Global Direct US"]weaknesses = ["Product shows structural wear after heavy usage.", "Customer service response times are slow."]
+        comp_sellers = ["Top US Brand Alpha", "PrimeMarket Seller", "Global Direct US"]
+        weaknesses = ["Product shows structural wear after heavy usage.", "Customer service response times are slow."]
         fix = "Reinforce material durability specs and highlight a 1-year warranty in your listing bullets."
 
     # Dashboard Results View
@@ -101,18 +102,18 @@ if st.sidebar.button("Run Amazon US Market Analysis"):
             "Top Consumer Complaint": [weaknesses[0], "Higher price point than expected", weaknesses[1]]
         })
         st.dataframe(comp_table, hide_index=True)
-        st.info(f"💡 US Market Strategy: Position your {product_name} listing just below top-tier brand pricing while heavily emphasizing build quality in your A+ Content.")
+        st.info(f"💡 **US Market Strategy:** Position your **{product_name}** listing just below top-tier brand pricing while heavily emphasizing build quality in your A+ Content.")
 
     with col_right:
         st.markdown("### ⚠️ US Customer Review Gap Analysis")
         st.write("Parsed common pain points from top Amazon.com review threads:")
         st.write(f"1. 🔴 *\"{weaknesses[0]}\"*")
         st.write(f"2. 🔴 *\"{weaknesses[1]}\"*")
-        st.success(f"✨ Actionable Product Fix: {fix}")
+        st.success(f"✨ **Actionable Product Fix:** {fix}")
         
         st.markdown("### 📢 Amazon PPC & Sponsored Ads Guardrails")
-        st.write(f"- Target US ACOS (Advertising Cost of Sales): 25% - 30%")
-        st.write(f"- Suggested Sponsored Products CPC Bid: Up to ${max_ppc_bid} per click.")
+        st.write(f"- **Target US ACOS (Advertising Cost of Sales):** 25% - 30%")
+        st.write(f"- **Suggested Sponsored Products CPC Bid:** Up to **${max_ppc_bid}** per click.")
 
 else:
-    st.info("👈 Enter any product name in the sidebar and click Run Amazon US Market Analysis to initialize the engine.")
+    st.info("👈 Enter any product name in the sidebar and click **Run Amazon US Market Analysis** to initialize the engine.")
