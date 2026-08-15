@@ -76,8 +76,7 @@ if st.sidebar.button("Run Amazon US Market Analysis"):
         weaknesses = ["The charging case stops holding a charge after 2 months.", "Ear tips fall out easily during workouts."]
         fix = "Bundle extra silicone ear-tip sizes and upgrade your battery component supplier."
     else:
-        comp_sellers = ["Top US Brand Alpha", "PrimeMarket Seller", "Global Direct US"]
-weaknesses = ["Product shows structural wear after heavy usage.", "Customer service response times are slow."]
+        comp_sellers = ["Top US Brand Alpha", "PrimeMarket Seller", "Global Direct US"]weaknesses = ["Product shows structural wear after heavy usage.", "Customer service response times are slow."]
         fix = "Reinforce material durability specs and highlight a 1-year warranty in your listing bullets."
 
     # Dashboard Results View
