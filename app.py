@@ -25,7 +25,6 @@ def load_usa_market_model():
     }
     
     df = pd.DataFrame(data)
-    # Corrected baseline pricing logic aligned strictly to market proximity
     df['Optimal_Price'] = df['Competitor_Avg_Price'] * 0.98 + (df['Demand_Score'] * 0.5)
     
     X = df[['Competitor_Avg_Price', 'Review_Rating', 'Review_Count', 'Production_Cost', 'Demand_Score']]
@@ -41,16 +40,15 @@ model = load_usa_market_model()
 
 # Sidebar: User inputs for Amazon USA Market
 st.sidebar.header("🛒 Amazon USA Product Setup")
-product_name = st.sidebar.text_input("Amazon US Product Name", "Ergonomic Seat Cushion")
-comp_avg_price = st.sidebar.number_input("Amazon US Competitor Avg Price ($)", min_value=5.0, max_value=1000.0, value=39.99)
-target_rating = st.sidebar.slider("Target US Customer Star Rating", 1.0, 5.0, 4.6)
-review_volume = st.sidebar.number_input("US Competitor Review Volume", min_value=10, max_value=100000, value=1850)
-cogs = st.sidebar.number_input("FBA Item Cost + Shipping ($)", min_value=1.0, max_value=500.0, value=14.50)
-demand_score = st.slider("US Marketplace Demand Index (1-10)", 1.0, 10.0, 8.0)
+product_name = st.sidebar.text_input("Amazon US Product Name", "Stanley Tumbler")
+comp_avg_price = st.sidebar.number_input("Amazon US Competitor Avg Price ($)", min_value=5.0, max_value=1000.0, value=34.99)
+target_rating = st.sidebar.slider("Target US Customer Star Rating", 1.0, 5.0, 4.7)
+review_volume = st.sidebar.number_input("US Competitor Review Volume", min_value=10, max_value=100000, value=3400)
+cogs = st.sidebar.number_input("FBA Item Cost + Shipping ($)", min_value=1.0, max_value=500.0, value=8.50)
+demand_score = st.slider("US Marketplace Demand Index (1-10)", 1.0, 10.0, 9.0)
 
 # Generate Actionable Intelligence Report
 if st.sidebar.button("Run Amazon US Market Analysis"):
-    # Enforce realistic pricing bounded closely to competitor average
     base_prediction = model.predict([[comp_avg_price, target_rating, review_volume, cogs, demand_score]])[0]
     recommended_price = round(max(cogs * 1.2, min(base_prediction, comp_avg_price * 1.15)), 2)
     
@@ -61,7 +59,7 @@ if st.sidebar.button("Run Amazon US Market Analysis"):
     buying_probability = max(20.0, min(95.0, round(100 - (price_ratio - 1) * 40 + (target_rating - 3) * 9, 1)))
     max_ppc_bid = round(estimated_profit * 0.20, 2)
     
-    # Dynamic text generator based on user's entered product name
+    # Fully dynamic text generator for ANY product name entered
     p_lower = product_name.lower()
     if "cushion" in p_lower or "pillow" in p_lower:
         comp_sellers = ["ComfiLife US", "Purple Brand Store", "Everlasting Comfort"]
@@ -71,10 +69,19 @@ if st.sidebar.button("Run Amazon US Market Analysis"):
         comp_sellers = ["Anker Direct (US)", "JBL Official Store", "Generic Amazon Brand"]
         weaknesses = ["The charging case stops holding a charge after 2 months.", "Ear tips fall out easily during workouts."]
         fix = "Bundle extra silicone ear-tip sizes and upgrade your battery component supplier."
+    elif "tumbler" in p_lower or "cup" in p_lower or "mug" in p_lower or "bottle" in p_lower:
+        comp_sellers = ["Hydro Flask Direct", "Simple Modern US", "Yeti Authorized Store"]
+        weaknesses = ["Lid leaks liquid when tipped over or knocked down.", "Paint coating chips or scratches off too easily."]
+        fix = "Upgrade to a threaded spill-proof silicone seal lid and use a scratch-resistant powder coat finish."
     else:
-        comp_sellers = ["Top US Brand Alpha", "PrimeMarket Seller", "Global Direct US"]
-        weaknesses = ["Product shows structural wear after heavy usage.", "Customer service response times are slow."]
-        fix = "Reinforce material durability specs and highlight a 1-year warranty in your listing bullets."
+        # Generic dynamic fallback using the product name itself!
+        capitalized_product = product_name.title()
+        comp_sellers = [f"US {capitalized_product} Direct", f"Prime {capitalized_product} Hub", f"Apex Global US"]
+        weaknesses = [
+            f"Customers report that the {product_name} experiences minor structural wear under heavy daily use.", 
+            f"Packaging is sometimes insufficient, leading to transit scuffs on the {product_name}."
+        ]
+        fix = f"Reinforce core material thickness and upgrade outer box packaging to ensure your {product_name} arrives pristine."
 
     # Dashboard Results View
     st.subheader(f"📊 Amazon USA Marketplace Report: {product_name}")
@@ -98,7 +105,7 @@ if st.sidebar.button("Run Amazon US Market Analysis"):
             "Top Consumer Complaint": [weaknesses[0], "Higher price point than expected", weaknesses[1]]
         })
         st.dataframe(comp_table, hide_index=True)
-        st.info(f"💡 **US Market Strategy:** Position your **{product_name}** listing just below top-tier brand pricing while heavily emphasizing build quality in your A+ Content.")
+        st.info(f"💡 **US Market Strategy:** Position your **{product_name}** listing competitively while highlighting superior build quality in your A+ Content to capture market share.")
 
     with col_right:
         st.markdown("### ⚠️ US Customer Review Gap Analysis")
