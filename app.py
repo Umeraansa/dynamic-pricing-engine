@@ -25,12 +25,8 @@ def load_usa_market_model():
     }
     
     df = pd.DataFrame(data)
-    df['Optimal_Price'] = (
-        df['Competitor_Avg_Price'] * 0.97 + 
-        (df['Review_Rating'] * 1.5) + 
-        (df['Demand_Score'] * 1.1) + 
-        (df['Production_Cost'] * 0.12)
-    )
+    # Corrected baseline pricing logic aligned strictly to market proximity
+    df['Optimal_Price'] = df['Competitor_Avg_Price'] * 0.98 + (df['Demand_Score'] * 0.5)
     
     X = df[['Competitor_Avg_Price', 'Review_Rating', 'Review_Count', 'Production_Cost', 'Demand_Score']]
     y = df['Optimal_Price']
@@ -49,17 +45,17 @@ product_name = st.sidebar.text_input("Amazon US Product Name", "Ergonomic Seat C
 comp_avg_price = st.sidebar.number_input("Amazon US Competitor Avg Price ($)", min_value=5.0, max_value=1000.0, value=39.99)
 target_rating = st.sidebar.slider("Target US Customer Star Rating", 1.0, 5.0, 4.6)
 review_volume = st.sidebar.number_input("US Competitor Review Volume", min_value=10, max_value=100000, value=1850)
-cogs = st.sidebar.number_input("FBA Item Cost + Shipping ($)", min_value=1.0, max_value=500.0, value=9.50)
+cogs = st.sidebar.number_input("FBA Item Cost + Shipping ($)", min_value=1.0, max_value=500.0, value=14.50)
 demand_score = st.slider("US Marketplace Demand Index (1-10)", 1.0, 10.0, 8.0)
 
 # Generate Actionable Intelligence Report
 if st.sidebar.button("Run Amazon US Market Analysis"):
-    input_df = pd.DataFrame([[comp_avg_price, target_rating, review_volume, cogs, demand_score]],
-                              columns=['Competitor_Avg_Price', 'Review_Rating', 'Review_Count', 'Production_Cost', 'Demand_Score'])
+    # Enforce realistic pricing bounded closely to competitor average
+    base_prediction = model.predict([[comp_avg_price, target_rating, review_volume, cogs, demand_score]])[0]
+    recommended_price = round(max(cogs * 1.2, min(base_prediction, comp_avg_price * 1.15)), 2)
     
-    recommended_price = model.predict(input_df)[0]
-    estimated_profit = recommended_price - cogs
-    profit_margin_pct = (estimated_profit / recommended_price) * 100
+    estimated_profit = round(recommended_price - cogs, 2)
+    profit_margin_pct = round((estimated_profit / recommended_price) * 100, 1)
     
     price_ratio = recommended_price / comp_avg_price
     buying_probability = max(20.0, min(95.0, round(100 - (price_ratio - 1) * 40 + (target_rating - 3) * 9, 1)))
@@ -85,7 +81,7 @@ if st.sidebar.button("Run Amazon US Market Analysis"):
     
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Recommended US Buy-Box Price", f"${recommended_price:.2f}", f"${recommended_price - comp_avg_price:.2f} vs US Comps")
-    m2.metric("Est. FBA Profit/Unit", f"${estimated_profit:.2f}", f"{profit_margin_pct:.1f}% Margin")
+    m2.metric("Est. FBA Profit/Unit", f"${estimated_profit:.2f}", f"{profit_margin_pct}% Margin")
     m3.metric("Est. US Buyer Conversion Rate", f"{buying_probability}%")
     m4.metric("Max Recommended Amazon PPC Bid", f"${max_ppc_bid}")
     
